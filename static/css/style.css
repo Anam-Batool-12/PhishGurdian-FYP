@@ -1,0 +1,31 @@
+/* Full screen background */
+body, html {
+  height: 100%;
+  margin: 20;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+  background-size: cover;
+  color: white;
+}
+
+/* Hero section full height */
+.hero {
+  height: 90vh;
+}
+
+/* Navbar links */
+.nav-link {
+  font-size: 1rem;
+  margin-left: 25px;
+  font-weight: bold;
+  
+}
+
+/* Button styling */
+.btn {
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+
+

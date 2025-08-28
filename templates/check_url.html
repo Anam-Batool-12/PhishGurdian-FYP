@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">🔍 Check a URL</h2>
+
+    <!-- URL Form -->
+    <form method="POST" action="{{ url_for('check_url') }}">
+        <div class="mb-3">
+            <input 
+                type="text" 
+                class="form-control" 
+                name="url" 
+                placeholder="Enter a website URL..." 
+                required
+            >
+        </div>
+        <button type="submit" class="btn btn-primary">Check URL</button>
+    </form>
+
+    <!-- Result Display -->
+    {% if result %}
+        <div 
+            class="alert mt-4 {% if 'safe' in result|lower %}alert-success{% else %}alert-danger{% endif %}" 
+            role="alert"
+        >
+            {{ result }}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

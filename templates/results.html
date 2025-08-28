@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">📑 URL Check History</h2>
+
+    {% if logs and logs|length > 0 %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover shadow-sm rounded">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">URL</th>
+                    <th scope="col">Result</th>
+                    <th scope="col">Checked At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ log['url'] }}</td>
+                    <td>
+                        {% if log['is_phishing'] == 1 %}
+                            <span class="badge bg-danger">Phishing</span>
+                        {% else %}
+                            <span class="badge bg-success">Safe</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log['checked_at'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center shadow-sm">
+        No URL checks yet!
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
