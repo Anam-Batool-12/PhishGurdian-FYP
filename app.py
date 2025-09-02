@@ -1,110 +1,139 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
-from phishing_rules.rules import is_phishy  # rule-based detection
+import os
+from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = "supersecret"
 
-# ---------------------------
-# QUIZ HELPER FUNCTIONS
-# ---------------------------
-def get_quiz_questions(limit=5):
-    """Fetch random quiz questions from the DB."""
-    conn = sqlite3.connect("database/quiz.db")
+# ---------- DB SETUP ----------
+DB_PATH = os.path.join("database", "phishguardian.db")
+os.makedirs("database", exist_ok=True)
+
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM questions ORDER BY RANDOM() LIMIT ?", (limit,))
-    questions = cur.fetchall()
-    conn.close()
-    return questions
+    return conn
+
+# ---------- URL CHECK ----------
+def is_phishing_url(url: str) -> bool:
+    suspicious_keywords = ["login", "verify", "update", "bank", "secure", "confirm"]
+    suspicious_exts = [".exe", ".scr", ".zip"]
+
+    if not url or url.strip() == "":
+        return None
+
+    if any(keyword in url.lower() for keyword in suspicious_keywords):
+        return True
+    if any(url.lower().endswith(ext) for ext in suspicious_exts):
+        return True
+    return False
 
 
-# ---------------------------
-# ROUTES
-# ---------------------------
-
+# ---------- ROUTES ----------
 @app.route("/")
-def index():
+def home():
     return render_template("index.html")
 
 
-# URL Checker page
 @app.route("/check_url", methods=["GET", "POST"])
 def check_url():
-    result_message = None
-    is_phish = None
+    result = None
+    is_phish = False
 
     if request.method == "POST":
-        url = request.form["url"]
-        is_phish, message = is_phishy(url)  # returns (True/False, message)
-        result_message = message
+        url = request.form.get("url")
+        phish_check = is_phishing_url(url)
 
-        # Save to log DB
-        conn = sqlite3.connect("database/quiz.db")
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO url_logs (url, is_phishing, result) VALUES (?, ?, ?)",
-            (url, 1 if is_phish else 0, message),
+        if phish_check is None:
+            result = "URL is required"
+        elif phish_check:
+            result = "⚠️ Phishing URL detected!"
+            is_phish = True
+        else:
+            result = "✅ Safe URL"
+
+        # Save in session logs
+        if "logs" not in session:
+            session["logs"] = []
+        session["logs"].append({"url": url, "result": result})
+
+        # Save in DB
+        conn = get_db_connection()
+        conn.execute(
+            "INSERT INTO url_logs (url, result, checked_at) VALUES (?, ?, ?)",
+            (url, result, datetime.now()),
         )
         conn.commit()
         conn.close()
 
-    return render_template("check_url.html", result=result_message, is_phish=is_phish)
+    return render_template("check_url.html", result=result, is_phish=is_phish)
 
 
-# Quiz page
-@app.route("/quiz")
-def quiz():
-    questions = get_quiz_questions()
-    return render_template("quiz.html", questions=questions)
-
-
-# Quiz submission → quiz_results.html
-@app.route("/submit_quiz", methods=["POST"])
-def submit_quiz():
-    score = 0
-    total = 0
-    skipped = 0
-
-    conn = sqlite3.connect("database/quiz.db")
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM questions")
-    all_questions = cur.fetchall()
-    conn.close()
-
-    # Loop through DB questions to check answers
-    for q in all_questions:
-        qid = str(q["id"])  # question ID
-        correct_answer = q["correct_option"]  # A / B / C / D
-        user_answer = request.form.get(f"question_{qid}")
-
-        total += 1
-        if user_answer:
-            if user_answer == correct_answer:
-                score += 1
-        else:
-            skipped += 1
-
-    return render_template(
-        "quiz_result.html", score=score, total=total, skipped=skipped
-    )
-
-
-# Results page → show last 10 URL logs
+# ---------- RESULTS ----------
 @app.route("/results")
 def results():
-    conn = sqlite3.connect("database/quiz.db")
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM url_logs ORDER BY checked_at DESC LIMIT 10")
-    logs = cur.fetchall()
+    session_logs = session.get("logs", [])
+    conn = get_db_connection()
+    db_logs = conn.execute(
+        "SELECT * FROM url_logs ORDER BY checked_at DESC LIMIT 20"
+    ).fetchall()
     conn.close()
+    return render_template("results.html", session_logs=session_logs, db_logs=db_logs)
 
-    return render_template("results.html", logs=logs)
+
+# ---------- QUIZ ----------
+QUESTIONS = [
+    {"id": 1, "q": "Which is safer?", "options": ["http://bank.com", "https://bank.com"], "answer": "B"},
+    {"id": 2, "q": "What should you avoid clicking?", "options": ["Unknown links", "Official site"], "answer": "A"},
+    {"id": 3, "q": "Phishing usually asks for?", "options": ["Personal info", "Weather updates"], "answer": "A"},
+]
+
+@app.route("/quiz")
+def quiz():
+    return render_template("quiz.html", questions=QUESTIONS)
+
+@app.route("/submit_quiz", methods=["POST"])
+def submit_quiz():
+    score, total, skipped = 0, len(QUESTIONS), 0
+    for q in QUESTIONS:
+        answer = request.form.get(f"question_{q['id']}")
+        if not answer:
+            skipped += 1
+        elif answer == q["answer"]:
+            score += 1
+
+    # Save stats for Chart.js
+    session["last_score"] = score
+    session["last_total"] = total
+    session["last_skipped"] = skipped
+
+    return render_template("quiz_result.html", score=score, total=total, skipped=skipped)
 
 
-# ---------------------------
-# MAIN
-# ---------------------------
+# ---------- CHART ENDPOINTS ----------
+@app.route("/chart/url_summary")
+def chart_url_summary():
+    conn = get_db_connection()
+    data = conn.execute("SELECT result, COUNT(*) as count FROM url_logs GROUP BY result").fetchall()
+    conn.close()
+    summary = {"safe": 0, "phishing": 0}
+    for row in data:
+        if "Safe" in row["result"]:
+            summary["safe"] = row["count"]
+        elif "Phishing" in row["result"]:
+            summary["phishing"] = row["count"]
+    return jsonify(summary)
+
+@app.route("/chart/quiz_summary")
+def chart_quiz_summary():
+    return jsonify(
+        {
+            "score": session.get("last_score", 0),
+            "total": session.get("last_total", 0),
+            "skipped": session.get("last_skipped", 0),
+        }
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

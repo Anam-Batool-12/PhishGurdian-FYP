@@ -1,58 +1,37 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container mt-5">
-    <h2 class="text-center mb-4">📊 Quiz Results</h2>
-
-    <div class="card shadow-lg p-4 rounded-3">
-        <p class="fs-5 text-center mb-3">
-            <strong>Your Score:</strong> {{ score }} / {{ total }}
-        </p>
-        <p class="fs-6 text-center">
-            <strong>Skipped:</strong> {{ skipped }}
-        </p>
-
-        <div class="d-flex justify-content-center mt-4">
-            <canvas id="quizChart" width="300" height="300"></canvas>
-        </div>
+<div class="container mt-4 text-center">
+    <h2 class="mb-3">🎉 Quiz Results</h2>
+    <div class="alert alert-info">
+        Score: {{ score }}/{{ total }} <br>
+        Skipped: {{ skipped }}
     </div>
 
-    <div class="text-center mt-4">
-        <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-lg rounded-pill shadow">
-            🔄 Try Again
-        </a>
-        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg rounded-pill shadow ms-2">
-            🏠 Back to Home
-        </a>
+    <div class="mt-5">
+        <h4>Performance Summary</h4>
+        <canvas id="quizChart" width="400" height="200"></canvas>
     </div>
 </div>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('quizChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Correct', 'Incorrect', 'Skipped'],
-            datasets: [{
-                data: [
-                    {{ score }},
-                    {{ total - score - skipped }},
-                    {{ skipped }}
-                ],
-                backgroundColor: ['#4caf50', '#f44336', '#ff9800'],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
+    fetch("{{ url_for('chart_quiz_summary') }}")
+      .then(res => res.json())
+      .then(data => {
+          new Chart(document.getElementById('quizChart'), {
+              type: 'doughnut',
+              data: {
+                  labels: ['Correct', 'Skipped', 'Wrong'],
+                  datasets: [{
+                      data: [
+                          data.score,
+                          data.skipped,
+                          data.total - data.score - data.skipped
+                      ],
+                      backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+                  }]
+              }
+          });
+      });
 </script>
 {% endblock %}

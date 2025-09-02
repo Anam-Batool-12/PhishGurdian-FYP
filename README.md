@@ -1,66 +1,85 @@
 # PhishGuardian: Rule-Based Phishing Detection and Cyber Awareness Toolkit
 
-PhishGuardian is a web-based application designed to improve cybersecurity awareness.  
-It detects phishing URLs using **rule-based logic** and provides a **cyber awareness quiz** to educate users.  
-This project is developed as a Final Year Project (FYP).
+PhishGuardian is a web-based cybersecurity awareness tool. It detects phishing URLs using rule-based logic and provides a cyber awareness quiz to educate users. This project is developed as a Final Year Project (FYP).
 
 ---
 
-## 🚀 Features
-- ✅ Rule-based phishing URL detection  
-- ✅ Empty URL validation & error handling  
-- ✅ Cyber awareness quiz with score tracking  
-- ✅ Result visualization using Chart.js (URL scan summary & quiz performance)  
-- ✅ Responsive UI (Bootstrap)  
-- 🔜 Hardware integration with Arduino (LED + Buzzer alerts)  
+## Features
+
+* Rule-based phishing URL detection
+* Empty URL validation & error handling
+* Cyber awareness quiz with score tracking
+* Result visualization using Chart.js (URL scan summary & quiz performance)
+* Responsive UI with Bootstrap
+* Planned hardware integration with Arduino (LED + Buzzer alerts)
 
 ---
 
-## 🛠 Tech Stack
-- **Backend:** Python (Flask)  
-- **Frontend:** HTML, CSS, Bootstrap, Chart.js  
-- **Database:** SQLite  
-- **Hardware (Planned):** Arduino Uno + LEDs + Buzzer  
+## Tech Stack
+
+* Backend: Python (Flask)
+* Frontend: HTML, CSS, Bootstrap, Chart.js
+* Database: SQLite
+* Hardware (Planned): Arduino Uno + LEDs + Buzzer
 
 ---
 
-## ⚙️ Installation & Setup
-1. Clone the repository:
-   ```bash
-   git clone <repo-url>
-   cd PhishGuardian_FYP
+## Installation & Setup
 
+### 1. Clone the repository
 
+```
+git clone <repo-url>
+cd PhishGuardian_FYP
+```
 
+### 2. Create a virtual environment
 
-##Create a virtual environment:
-
+```
+# Windows
 python -m venv venv
-venv\Scripts\activate   # Windows
-source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate
 
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
+```
 
+### 3. Install dependencies
 
-
-##Install dependencies:
+```
 pip install -r requirements.txt
+```
 
-##Run the app:
+### 4. Run the Flask app
+
+```
 python app.py
+```
 
+App will be available at: `http://127.0.0.1:5000`
 
-##📖 Usage
-Enter a URL → system classifies as Safe, Suspicious, or Phishing.
+---
 
-Take the Cyber Awareness Quiz → score & feedback shown at the end.
+## Usage
 
-Charts display:
+1. **URL Scanner**: Enter a URL → classified as Safe, Suspicious, or Phishing.
+2. **Cyber Awareness Quiz**: Take the quiz → get your score & feedback.
+3. **Charts & Reports**: Visualize results:
 
-URL scan summary (Safe vs Phishing count)
+   * URL scan summary (Safe vs Phishing count)
+   * Quiz performance (score breakdown)
 
-Quiz performance (Score breakdown)
+---
 
+## Future Scope
 
-👩‍💻 Contributor
+* Arduino integration (Red/Green LEDs + buzzer) for physical feedback during phishing detection.
+* Expand detection logic with Machine Learning.
+* Admin dashboard for user activity reports.
+
+---
+
+## Contributor
 
 Anam Batool – Software Engineering Student, Virtual University of Pakistan

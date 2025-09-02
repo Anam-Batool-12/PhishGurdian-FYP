@@ -1,31 +1,22 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">🔍 Check a URL</h2>
+<div class="container mt-4 text-center">
+    <h2 class="mb-3">🔎 Phishing URL Checker</h2>
 
-    <!-- URL Form -->
-    <form method="POST" action="{{ url_for('check_url') }}">
-        <div class="mb-3">
-            <input 
-                type="text" 
-                class="form-control" 
-                name="url" 
-                placeholder="Enter a website URL..." 
-                required
-            >
+    <form method="POST">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" name="url" placeholder="Enter URL">
+            <button class="btn btn-primary" type="submit">Check</button>
         </div>
-        <button type="submit" class="btn btn-primary">Check URL</button>
     </form>
 
-    <!-- Result Display -->
     {% if result %}
-        <div 
-            class="alert mt-4 {% if 'safe' in result|lower %}alert-success{% else %}alert-danger{% endif %}" 
-            role="alert"
-        >
-            {{ result }}
-        </div>
+      <div class="alert mt-4 
+          {% if is_phish %}alert-danger
+          {% elif result == "URL is required" %}alert-warning
+          {% else %}alert-success{% endif %}">
+        {{ result }}
+      </div>
     {% endif %}
 </div>
 {% endblock %}
