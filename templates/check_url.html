@@ -18,5 +18,13 @@
         {{ result }}
       </div>
     {% endif %}
+
+    {% if feedback %}
+<div class="card mt-3 p-3">
+  <h5>Hardware Feedback</h5>
+  <p>{{ feedback }}</p>
+</div>
+{% endif %}
+
 </div>
 {% endblock %}

@@ -3,8 +3,13 @@ import sqlite3
 import os
 from datetime import datetime
 
+# Import hardware + phishing rules
+from hardware import indicate_url_status
+from phishing_rules.rules import is_phishy
+
+
 app = Flask(__name__)
-app.secret_key = "supersecret"
+app.secret_key = "superscret"
 
 # ---------- DB SETUP ----------
 DB_PATH = os.path.join("database", "phishguardian.db")
@@ -14,20 +19,6 @@ def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
-
-# ---------- URL CHECK ----------
-def is_phishing_url(url: str) -> bool:
-    suspicious_keywords = ["login", "verify", "update", "bank", "secure", "confirm"]
-    suspicious_exts = [".exe", ".scr", ".zip"]
-
-    if not url or url.strip() == "":
-        return None
-
-    if any(keyword in url.lower() for keyword in suspicious_keywords):
-        return True
-    if any(url.lower().endswith(ext) for ext in suspicious_exts):
-        return True
-    return False
 
 
 # ---------- ROUTES ----------
@@ -40,18 +31,23 @@ def home():
 def check_url():
     result = None
     is_phish = False
+    hardware_feedback = None
 
     if request.method == "POST":
         url = request.form.get("url")
-        phish_check = is_phishing_url(url)
 
-        if phish_check is None:
-            result = "URL is required"
-        elif phish_check:
-            result = "⚠️ Phishing URL detected!"
+        # Use rules.py detection
+        phish_check, reason = is_phishy(url)
+
+        if phish_check:
+            result = f"⚠️ Phishing URL detected! ({reason})"
             is_phish = True
         else:
-            result = "✅ Safe URL"
+            result = reason  # "✅ This URL seems safe."
+
+        # --- Hardware Simulation ---
+        status = "phishing" if is_phish else "safe"
+        hardware_feedback = indicate_url_status(status)
 
         # Save in session logs
         if "logs" not in session:
@@ -67,7 +63,12 @@ def check_url():
         conn.commit()
         conn.close()
 
-    return render_template("check_url.html", result=result, is_phish=is_phish)
+    return render_template(
+        "check_url.html",
+        result=result,
+        is_phish=is_phish,
+        feedback=hardware_feedback,
+    )
 
 
 # ---------- RESULTS ----------
@@ -134,6 +135,7 @@ def chart_quiz_summary():
             "skipped": session.get("last_skipped", 0),
         }
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -80,6 +80,9 @@ App will be available at: `http://127.0.0.1:5000`
 
 ---
 
-## Contributor
 
+## Supervisor 
+  Engineer Waqar  Ahmad - Virtual University of Pakistan
+
+## Contributor
 Anam Batool – Software Engineering Student, Virtual University of Pakistan
