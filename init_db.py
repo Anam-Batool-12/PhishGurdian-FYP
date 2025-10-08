@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS url_logs (
 
 conn.commit()
 conn.close()
-print("✅ Database initialized successfully")
+print(" Database initialized successfully")

@@ -1,14 +1,14 @@
+
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4 text-center">
-    <h2 class="mb-3">🎉 Quiz Results</h2>
+    <h2 class="mb-3 text-white">Quiz Results</h2>
     <div class="alert alert-info">
-        Score: {{ score }}/{{ total }} <br>
-        Skipped: {{ skipped }}
+        Score: {{ score }}/{{ total }}
     </div>
 
     <div class="mt-5">
-        <h4>Performance Summary</h4>
+        <h4 class="text-white">Performance Summary</h4>
         <canvas id="quizChart" width="400" height="200"></canvas>
     </div>
 </div>
@@ -21,17 +21,26 @@
           new Chart(document.getElementById('quizChart'), {
               type: 'doughnut',
               data: {
-                  labels: ['Correct', 'Skipped', 'Wrong'],
+                  labels: ['Correct', 'Wrong'],
                   datasets: [{
                       data: [
                           data.score,
-                          data.skipped,
-                          data.total - data.score - data.skipped
+                          data.total - data.score
                       ],
-                      backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+                      backgroundColor: ['#28a745', '#dc3545']
                   }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  plugins: {
+                      legend: {
+                          position: 'bottom'
+                      }
+                  }
               }
           });
       });
 </script>
 {% endblock %}
+

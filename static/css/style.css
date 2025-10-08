@@ -29,3 +29,28 @@ body, html {
 
 
 
+
+
+/* Quiz Results Chart Styling */
+#quizChart {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 300px; /* controls size */
+    margin: 0 auto;
+    display: block;
+}
+
+.container h2, 
+.container h4 {
+    color: #333;
+}
+
+.alert-info {
+    font-size: 1.1rem;
+    border-radius: 10px;
+}
+
+/* Optional: add spacing below */
+.mt-5 {
+    margin-top: 2rem !important;
+}
