@@ -10,17 +10,17 @@ from hardware import indicate_url_status
 from phishing_rules.rules import is_phishy
 
 # ---------- ARDUINO SETUP ----------
-# Try connecting once (optional first check)
+
 try:
     arduino = serial.Serial('COM4', 9600, timeout=1)
     time.sleep(2)  # wait for Arduino to reset
-    print("✅ Arduino connected successfully on COM4!")
+    print("Arduino connected successfully on COM4!")
     arduino.close()
 except Exception as e:
     arduino = None
-    print("⚠️ Arduino not found:", e)
+    print("Arduino not found:", e)
 
-
+  
 # ---------- FLASK APP ----------
 app = Flask(__name__)
 app.secret_key = "superscret"
@@ -57,27 +57,27 @@ def check_url():
             result = f"Phishing URL detected! ({reason})"
             is_phish = True
         else:
-            result = reason  # e.g., "This URL seems safe."
+            result = reason  
 
         # --- Hardware LED text feedback ---
         status = "phishing" if is_phish else "safe"
         hardware_feedback = indicate_url_status(status)
 
-        # --- ✅ Send signal to Arduino ---
+        # ---  Send signal to Arduino ---
         try:
             arduino = serial.Serial('COM4', 9600, timeout=1)
             time.sleep(2)  # let Arduino get ready
 
             if is_phish:
                 arduino.write(b"PHISH\n")
-                print("🔴 Sent to Arduino: PHISH")
+                print("Sent to Arduino: PHISH")
             else:
                 arduino.write(b"SAFE\n")
-                print("🟢 Sent to Arduino: SAFE")
+                print("Sent to Arduino: SAFE")
 
             arduino.close()
         except Exception as e:
-            print("⚠️ Arduino write error:", e)
+            print("Arduino write error:", e)
 
         # --- Save in session (for quick access) ---
         if "logs" not in session:
@@ -111,6 +111,7 @@ def results():
     ).fetchall()
     conn.close()
     return render_template("results.html", session_logs=session_logs, db_logs=db_logs)
+
 
 
 # ---------- QUIZ ----------

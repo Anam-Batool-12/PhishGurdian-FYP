@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-3 text-center">📝 Cyber Awareness Quiz</h2>
+    <h2 class="mb-3 text-center">Cyber Awareness Quiz</h2>
     <form method="POST" action="{{ url_for('submit_quiz') }}">
         {% for q in questions %}
         <div class="mb-4">

@@ -32,4 +32,4 @@ def is_phishy(url):
     if re.match(r"^https?:\/\/\d+\.\d+\.\d+\.\d+", url):
         return True, "URL is using an IP address instead of domain name."
 
-    return False, "✅ This URL seems safe."
+    return False, "This URL seems safe."
