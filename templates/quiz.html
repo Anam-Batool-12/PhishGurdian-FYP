@@ -8,7 +8,10 @@
             <p><strong>Q{{ loop.index }}: {{ q['q'] }}</strong></p>
             {% for option in q['options'] %}
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="question_{{ q['id'] }}" value="{{ 'A' if loop.index==1 else 'B' }}" required>
+                <!-- send the option text directly -->
+                <input class="form-check-input" type="radio" 
+                       name="question_{{ q['id'] }}" 
+                       value="{{ option }}" required>
                 <label class="form-check-label">{{ option }}</label>
             </div>
             {% endfor %}

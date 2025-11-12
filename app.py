@@ -4,6 +4,8 @@ import os
 from datetime import datetime
 import serial
 import time
+import json
+import random
 
 # Import hardware + phishing rules
 from hardware import indicate_url_status
@@ -41,14 +43,96 @@ def home():
     return render_template("index.html")
 
 
+# @app.route("/check_url", methods=["GET", "POST"])
+# def check_url():
+#     result = None
+#     is_phish = False
+#     hardware_feedback = None
+
+#     if request.method == "POST":
+#         url = request.form.get("url")
+
+#         # --- Run rule-based detection ---
+#         phish_check, reason = is_phishy(url)
+
+#         if phish_check:
+#             result = f"Phishing URL detected! ({reason})"
+#             is_phish = True
+#         else:
+#             result = reason  
+
+#         # --- Hardware LED text feedback ---
+#         status = "phishing" if is_phish else "safe"
+#         hardware_feedback = indicate_url_status(status)
+
+#         # ---  Send signal to Arduino ---
+#         try:
+#             arduino = serial.Serial('COM4', 9600, timeout=1)
+#             time.sleep(2)  # let Arduino get ready
+
+#             if is_phish:
+#                 arduino.write(b"PHISH\n")
+#                 print("Sent to Arduino: PHISH")
+#             else:
+#                 arduino.write(b"SAFE\n")
+#                 print("Sent to Arduino: SAFE")
+
+#             arduino.close()
+#         except Exception as e:
+#             print("Arduino write error:", e)
+
+#         # --- Save in session (for quick access) ---
+#         if "logs" not in session:
+#             session["logs"] = []
+#         session["logs"].append({"url": url, "result": result})
+
+#         # --- Save in Database ---
+#         conn = get_db_connection()
+#         conn.execute(
+#             "INSERT INTO url_logs (url, result, checked_at) VALUES (?, ?, ?)",
+#             (url, result, datetime.now()),
+#         )
+#         conn.commit()
+#         conn.close()
+
+#     return render_template(
+#         "check_url.html",
+#         result=result,
+#         is_phish=is_phish,
+#         feedback=hardware_feedback,
+#     )
+
+
+
 @app.route("/check_url", methods=["GET", "POST"])
 def check_url():
+    import re
     result = None
     is_phish = False
     hardware_feedback = None
 
     if request.method == "POST":
-        url = request.form.get("url")
+        url = request.form.get("url", "").strip()
+
+        # --- Empty URL Check ---
+        if not url:
+            result = "Please enter a URL first."
+            return render_template(
+                "check_url.html",
+                result=result,
+                is_phish=False,
+                feedback=None
+            )
+
+        # --- Basic URL Format Validation ---
+        if not re.match(r"^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/.*)?$", url):
+            result = "Please enter a valid URL."
+            return render_template(
+                "check_url.html",
+                result=result,
+                is_phish=False,
+                feedback=None
+            )
 
         # --- Run rule-based detection ---
         phish_check, reason = is_phishy(url)
@@ -63,7 +147,7 @@ def check_url():
         status = "phishing" if is_phish else "safe"
         hardware_feedback = indicate_url_status(status)
 
-        # ---  Send signal to Arduino ---
+        # --- Send signal to Arduino ---
         try:
             arduino = serial.Serial('COM4', 9600, timeout=1)
             time.sleep(2)  # let Arduino get ready
@@ -79,12 +163,11 @@ def check_url():
         except Exception as e:
             print("Arduino write error:", e)
 
-        # --- Save in session (for quick access) ---
+        # --- Save only valid URLs to session + DB ---
         if "logs" not in session:
             session["logs"] = []
         session["logs"].append({"url": url, "result": result})
 
-        # --- Save in Database ---
         conn = get_db_connection()
         conn.execute(
             "INSERT INTO url_logs (url, result, checked_at) VALUES (?, ?, ?)",
@@ -100,7 +183,6 @@ def check_url():
         feedback=hardware_feedback,
     )
 
-
 # ---------- RESULTS PAGE ----------
 @app.route("/results")
 def results():
@@ -115,32 +197,38 @@ def results():
 
 
 # ---------- QUIZ ----------
-QUESTIONS = [
-    {"id": 1, "q": "Which is safer?", "options": ["http://bank.com", "https://bank.com"], "answer": "B"},
-    {"id": 2, "q": "What should you avoid clicking?", "options": ["Unknown links", "Official site"], "answer": "A"},
-    {"id": 3, "q": "Phishing usually asks for?", "options": ["Personal info", "Weather updates"], "answer": "A"},
-]
+
+def load_questions():
+    path = os.path.join("Data", "quiz_questions.json")
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
 
 @app.route("/quiz")
 def quiz():
-    return render_template("quiz.html", questions=QUESTIONS)
+    all_questions = load_questions()  
+    num_questions = 5
+    random_questions = random.sample(all_questions, min(num_questions, len(all_questions)))
+    for q in random_questions:
+        random.shuffle(q["options"])
 
+    session["questions"] = random_questions
+    return render_template("quiz.html", questions=random_questions)
 
 
 @app.route("/submit_quiz", methods=["POST"])
 def submit_quiz():
     score = 0
-    total = len(QUESTIONS)
+    questions = session.get("questions", [])
+    total = len(questions)
 
-    for q in QUESTIONS:
-        answer = request.form.get(f"question_{q['id']}")
-        if answer == q["answer"]:
+    for q in questions:
+        selected_option = request.form.get(f"question_{q['id']}")
+        if selected_option == q['answer']: 
             score += 1
 
-    # Save stats for Chart.js
     session["last_score"] = score
     session["last_total"] = total
-
     return render_template("quiz_result.html", score=score, total=total)
 
 
