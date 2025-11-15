@@ -43,66 +43,6 @@ def home():
     return render_template("index.html")
 
 
-# @app.route("/check_url", methods=["GET", "POST"])
-# def check_url():
-#     result = None
-#     is_phish = False
-#     hardware_feedback = None
-
-#     if request.method == "POST":
-#         url = request.form.get("url")
-
-#         # --- Run rule-based detection ---
-#         phish_check, reason = is_phishy(url)
-
-#         if phish_check:
-#             result = f"Phishing URL detected! ({reason})"
-#             is_phish = True
-#         else:
-#             result = reason  
-
-#         # --- Hardware LED text feedback ---
-#         status = "phishing" if is_phish else "safe"
-#         hardware_feedback = indicate_url_status(status)
-
-#         # ---  Send signal to Arduino ---
-#         try:
-#             arduino = serial.Serial('COM4', 9600, timeout=1)
-#             time.sleep(2)  # let Arduino get ready
-
-#             if is_phish:
-#                 arduino.write(b"PHISH\n")
-#                 print("Sent to Arduino: PHISH")
-#             else:
-#                 arduino.write(b"SAFE\n")
-#                 print("Sent to Arduino: SAFE")
-
-#             arduino.close()
-#         except Exception as e:
-#             print("Arduino write error:", e)
-
-#         # --- Save in session (for quick access) ---
-#         if "logs" not in session:
-#             session["logs"] = []
-#         session["logs"].append({"url": url, "result": result})
-
-#         # --- Save in Database ---
-#         conn = get_db_connection()
-#         conn.execute(
-#             "INSERT INTO url_logs (url, result, checked_at) VALUES (?, ?, ?)",
-#             (url, result, datetime.now()),
-#         )
-#         conn.commit()
-#         conn.close()
-
-#     return render_template(
-#         "check_url.html",
-#         result=result,
-#         is_phish=is_phish,
-#         feedback=hardware_feedback,
-#     )
-
-
 
 @app.route("/check_url", methods=["GET", "POST"])
 def check_url():
@@ -113,26 +53,6 @@ def check_url():
 
     if request.method == "POST":
         url = request.form.get("url", "").strip()
-
-        # --- Empty URL Check ---
-        if not url:
-            result = "Please enter a URL first."
-            return render_template(
-                "check_url.html",
-                result=result,
-                is_phish=False,
-                feedback=None
-            )
-
-        # --- Basic URL Format Validation ---
-        if not re.match(r"^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/.*)?$", url):
-            result = "Please enter a valid URL."
-            return render_template(
-                "check_url.html",
-                result=result,
-                is_phish=False,
-                feedback=None
-            )
 
         # --- Run rule-based detection ---
         phish_check, reason = is_phishy(url)
@@ -189,7 +109,7 @@ def results():
     session_logs = session.get("logs", [])
     conn = get_db_connection()
     db_logs = conn.execute(
-        "SELECT * FROM url_logs ORDER BY checked_at DESC LIMIT 20"
+        "SELECT * FROM url_logs ORDER BY checked_at DESC LIMIT 10"
     ).fetchall()
     conn.close()
     return render_template("results.html", session_logs=session_logs, db_logs=db_logs)
@@ -253,7 +173,6 @@ def chart_quiz_summary():
         {
             "score": session.get("last_score", 0),
             "total": session.get("last_total", 0),
-            "skipped": session.get("last_skipped", 0),
         }
     )
 

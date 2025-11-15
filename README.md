@@ -1,26 +1,25 @@
+# 🛡️ PhishGuardian: Rule-Based Phishing Detection & Cyber Awareness Toolkit
 
-# 🛡️ PhishGuardian: Rule-Based Phishing Detection and Cyber Awareness Toolkit
-
-**PhishGuardian** is a **web-based cybersecurity awareness application** designed to detect phishing URLs using **rule-based logic** and enhance users’ cyber awareness through an **interactive quiz**.
+**PhishGuardian** is a **web-based cybersecurity awareness platform** built to detect phishing URLs using **rule-based logic** and boost users’ cyber hygiene through an **interactive quiz**.
 This project was developed as a **Final Year Project (FYP)** at the **Virtual University of Pakistan**.
 
 ---
 
 ## 🚀 Project Overview
 
-PhishGuardian empowers users to identify phishing threats and improve their cybersecurity knowledge.
-It provides **real-time phishing detection**, **educational feedback**, and **visual insights** through charts — all in a **simple, responsive web interface**.
+PhishGuardian helps users spot shady URLs & level up their cybersecurity vibes.
+It offers **real-time detection**, **instant explanations**, **visual insights**, and even **hardware-based alerts** using an **Arduino Uno**.
 
 ---
 
 ## ✨ Key Features
 
-✅ **Rule-Based URL Detection** — Classifies links as *Safe*, *Suspicious*, or *Phishing*
-✅ **URL Validation & Error Handling** — Prevents empty or invalid inputs
-✅ **Cyber Awareness Quiz** — Engages users to test and improve their knowledge
-✅ **Interactive Visualizations** — Displays results using **Chart.js** (URL scans & quiz stats)
-✅ **Responsive UI** — Built with **Bootstrap** for all screen sizes
-✅ **Hardware Feedback (Integrated)** — **Arduino Uno** with **LED indicators** and **Buzzer** for physical phishing alerts
+✅ **Rule-Based URL Detection** → Categorizes URLs as *Safe*, *Suspicious*, or *Phishing*
+✅ **Smart Validation** → Blocks empty/invalid inputs
+✅ **Cyber Awareness Quiz** → Quick, interactive, and beginner-friendly
+✅ **Charts & Analytics** → Quiz and scan stats powered by **Chart.js**
+✅ **Responsive Design** → Built using **Bootstrap**
+✅ **Hardware Alerts** → Arduino LEDs + Buzzer react to URL status in real time
 
 ---
 
@@ -29,20 +28,20 @@ It provides **real-time phishing detection**, **educational feedback**, and **vi
 **Backend:** Python (Flask)
 **Frontend:** HTML, CSS, Bootstrap, Chart.js
 **Database:** SQLite
-**Hardware Integration:** Arduino Uno, Breadboard, LEDs (Red/Green), Buzzer, Resistors, Jumper Wires
+**Hardware:** Arduino Uno, Breadboard, LEDs (Red/Green), Resistors, Buzzer, Jumper Wires
 
 ---
 
 ## ⚙️ Installation & Setup
 
-### 1. Clone the Repository
+### 1. Clone the Repo
 
 ```bash
 git clone <repo-url>
 cd PhishGuardian_FYP
 ```
 
-### 2. Create a Virtual Environment
+### 2. Create the Virtual Environment
 
 ```bash
 # Windows
@@ -60,37 +59,94 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Run the Flask Application
+### 4. Run the Flask App
 
 ```bash
 python app.py
 ```
 
-The app will run at: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
+App opens at: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 
 ---
 
-## 🖥️ How to Use
+# 🔌 How to Run the Arduino Code
 
-1. **Phishing URL Scanner:**
-   → Enter a website link to check if it’s *Safe*, *Suspicious*, or *Phishing*.
+Yesss, here's the new section you asked for 👇🔥
 
-2. **Cyber Awareness Quiz:**
-   → Attempt the quiz to test your knowledge and receive instant feedback.
+### 🛠️ Requirements
 
-3. **Visual Reports:**
-   → Analyze your results via charts for both URL scans and quiz performance.
+* Arduino Uno
+* USB cable
+* Arduino IDE (from arduino.cc)
+* Your Arduino `.ino` code file
+* Connected hardware:
 
-4. **Hardware Alerts:**
-   → Red LED & buzzer indicate phishing detection; green LED signals safe URLs.
+  * Red LED (with resistor)
+  * Green LED (with resistor)
+  * Buzzer
+  * Jumper wires + breadboard
 
 ---
 
-## 🔮 Future Enhancements
+### 📥 1. Open the Arduino Code
 
-* Upgrade phishing detection using **Machine Learning models**
-* Add **Admin Dashboard** for monitoring and analytics
-* Extend quiz database with more diverse cybersecurity topics
+1. Launch **Arduino IDE**
+2. Go to **File → Open**
+3. Select your `phishguardian.ino` (or whatever you named it)
+
+---
+
+### 🔧 2. Select Your Board & Port
+
+* Go to **Tools → Board → Arduino Uno**
+* Go to **Tools → Port → COMX** (Windows) or `/dev/ttyUSBX` (Linux/Mac)
+
+If you're unsure which COM port it is… just unplug → see which one disappears → plug back.
+
+---
+
+### 💡 3. Upload the Code
+
+Simply hit the **Upload (→)** button.
+The IDE will compile + flash the code onto your Arduino.
+
+If it says *Done Uploading* → your board is good to go 🎉
+
+---
+
+### 🔄 4. Ensure Serial Communication Works
+
+Your Flask app sends commands via serial, so:
+
+* Arduino should use **9600 baud rate**
+* In your code:
+
+  ```cpp
+  Serial.begin(9600);
+  ```
+* Python side should match this in your `serial.Serial()` config.
+
+---
+
+### 🟩🟥 5. Hardware Behavior
+
+Once connected to your Flask backend:
+
+| URL Result | Green LED   | Red LED     | Buzzer        |
+| ---------- | ----------- | ----------- | ------------- |
+| Safe       | Blinks 2–3x | Off         | Silent        |
+| Suspicious | Off         | Blinks      | Optional beep |
+| Phishing   | Off         | Blinks 2–3x | Beeps         |
+
+You can customize blink count, timing, or buzzer style inside the `.ino` logic.
+
+---
+
+# 🔮 Future Enhancements
+
+* Add **machine learning–based detection**
+* Advanced **admin dashboard**
+* Bigger, more diverse **quiz question bank**
 
 ---
 
@@ -100,11 +156,14 @@ The app will run at: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 
 ## 👩‍💻 Contributor
 
-**Anam Batool** — Software Engineering Student, Virtual University of Pakistan
+**Anam Batool** — Software Engineering Student, VU
 
 ---
 
 ## 🏁 Project Status
 
-✅ **Completed Successfully** — Final Year Project defense presented and submitted.
+✅ **Successfully Completed** — Fully developed, presented, and submitted.
+
+---
+
 

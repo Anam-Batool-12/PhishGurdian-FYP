@@ -1,8 +1,3 @@
-# hardware_sim.py
-"""
-Simulated hardware integration for PhishGuardian.
-Mimics Arduino behavior with LEDs and buzzer.
-"""
 
 def indicate_url_status(url_status: str):
     """
