@@ -32,3 +32,7 @@ def is_phishy(url):
         return True, "URL is using an IP address instead of domain name."
 
     return False, "This URL seems safe."
+
+
+
+
