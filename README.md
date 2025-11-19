@@ -1,38 +1,32 @@
-# 🛡️ PhishGuardian: Rule-Based Phishing Detection & Cyber Awareness Toolkit
+#  PhishGuardian: Rule-Based Phishing Detection & Cyber Awareness Toolkit
 
 **PhishGuardian** is a **web-based cybersecurity awareness platform** built to detect phishing URLs using **rule-based logic** and boost users’ cyber hygiene through an **interactive quiz**.
 This project was developed as a **Final Year Project (FYP)** at the **Virtual University of Pakistan**.
 
----
-
-## 🚀 Project Overview
+##  Project Overview
 
 PhishGuardian helps users spot shady URLs & level up their cybersecurity vibes.
 It offers **real-time detection**, **instant explanations**, **visual insights**, and even **hardware-based alerts** using an **Arduino Uno**.
 
----
 
-## ✨ Key Features
+## Key Features
 
-✅ **Rule-Based URL Detection** → Categorizes URLs as *Safe*, *Suspicious*, or *Phishing*
+✅ **Rule-Based URL Detection** → Categorizes URLs as *Safe*,  or *Phishing*
 ✅ **Smart Validation** → Blocks empty/invalid inputs
 ✅ **Cyber Awareness Quiz** → Quick, interactive, and beginner-friendly
 ✅ **Charts & Analytics** → Quiz and scan stats powered by **Chart.js**
 ✅ **Responsive Design** → Built using **Bootstrap**
 ✅ **Hardware Alerts** → Arduino LEDs + Buzzer react to URL status in real time
 
----
 
-## 🧠 Tech Stack
+## Tech Stack
 
 **Backend:** Python (Flask)
 **Frontend:** HTML, CSS, Bootstrap, Chart.js
 **Database:** SQLite
 **Hardware:** Arduino Uno, Breadboard, LEDs (Red/Green), Resistors, Buzzer, Jumper Wires
 
----
-
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 ### 1. Clone the Repo
 
@@ -69,11 +63,11 @@ App opens at: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 
 ---
 
-# 🔌 How to Run the Arduino Code
+#  How to Run the Arduino Code
 
-Yesss, here's the new section you asked for 👇🔥
+Yesss, here's the new section you asked for 
 
-### 🛠️ Requirements
+### Requirements
 
 * Arduino Uno
 * USB cable
@@ -86,17 +80,15 @@ Yesss, here's the new section you asked for 👇🔥
   * Buzzer
   * Jumper wires + breadboard
 
----
 
-### 📥 1. Open the Arduino Code
+### 1. Open the Arduino Code
 
 1. Launch **Arduino IDE**
 2. Go to **File → Open**
 3. Select your `phishguardian.ino` (or whatever you named it)
 
----
 
-### 🔧 2. Select Your Board & Port
+### 2. Select Your Board & Port
 
 * Go to **Tools → Board → Arduino Uno**
 * Go to **Tools → Port → COMX** (Windows) or `/dev/ttyUSBX` (Linux/Mac)
@@ -105,16 +97,16 @@ If you're unsure which COM port it is… just unplug → see which one disappear
 
 ---
 
-### 💡 3. Upload the Code
+###  3. Upload the Code
 
 Simply hit the **Upload (→)** button.
 The IDE will compile + flash the code onto your Arduino.
 
-If it says *Done Uploading* → your board is good to go 🎉
+If it says *Done Uploading* → your board is good to go 
 
----
 
-### 🔄 4. Ensure Serial Communication Works
+
+### 4. Ensure Serial Communication Works
 
 Your Flask app sends commands via serial, so:
 
@@ -126,7 +118,7 @@ Your Flask app sends commands via serial, so:
   ```
 * Python side should match this in your `serial.Serial()` config.
 
----
+
 
 ### 🟩🟥 5. Hardware Behavior
 
@@ -140,25 +132,22 @@ Once connected to your Flask backend:
 
 You can customize blink count, timing, or buzzer style inside the `.ino` logic.
 
----
 
-# 🔮 Future Enhancements
+#  Future Enhancements
 
 * Add **machine learning–based detection**
 * Advanced **admin dashboard**
 * Bigger, more diverse **quiz question bank**
 
----
 
-## 👨‍🏫 Supervisor
+##  Supervisor
 
 **Engr. Waqar Ahmad** — Virtual University of Pakistan
 
-## 👩‍💻 Contributor
+## Contributor
 
 **Anam Batool** — Software Engineering Student, VU
 
----
 
 ## 🏁 Project Status
 
