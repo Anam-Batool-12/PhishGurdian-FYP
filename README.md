@@ -65,8 +65,6 @@ App opens at: **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
 
 #  How to Run the Arduino Code
 
-Yesss, here's the new section you asked for 
-
 ### Requirements
 
 * Arduino Uno
@@ -107,8 +105,6 @@ If it says *Done Uploading* → your board is good to go
 
 
 ### 4. Ensure Serial Communication Works
-
-Your Flask app sends commands via serial, so:
 
 * Arduino should use **9600 baud rate**
 * In your code:
@@ -153,6 +149,5 @@ You can customize blink count, timing, or buzzer style inside the `.ino` logic.
 
 ✅ **Successfully Completed** — Fully developed, presented, and submitted.
 
----
 
 
