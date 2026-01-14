@@ -57,11 +57,13 @@ def check_url():
         # --- Run rule-based detection ---
         phish_check, reason = is_phishy(url)
 
+
         if phish_check:
-            result = f"Phishing URL detected! ({reason})"
-            is_phish = True
+             result = f"Phishing: {reason}"
+             is_phish = True
         else:
-            result = reason  
+            result = f"Safe: {reason}"
+
 
         # --- Hardware LED text feedback ---
         status = "phishing" if is_phish else "safe"

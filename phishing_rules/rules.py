@@ -2,37 +2,38 @@ import re
 
 def is_phishy(url):
     if not url or not isinstance(url, str) or url.strip() == "":
-        return False, "URL is required."
+        return True, "Empty or missing URL"
+
+    url = url.strip().lower()
 
     if not re.match(r"^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/.*)?$", url):
-        return False, "Invalid URL format."
+        return True, "Malformed URL structure"
 
     if url.startswith("http://"):
-        return True, "URL is not secure (uses http instead of https)."
+        return True, "Uses insecure HTTP"
 
-    suspicious_keywords = ["login", "verify", "update", "secure", "free", "click", "account", "bank", "confirm"]
+    suspicious_keywords = [
+        "login", "verify", "update", "secure",
+        "account", "bank", "confirm", "signin", "free", "click"
+    ]
+
     for keyword in suspicious_keywords:
-        if keyword in url.lower():
-            return True, f"Suspicious keyword found: {keyword}"
+        if keyword in url:
+            return True, f"Suspicious keyword detected: {keyword}"
 
     if len(url) > 75:
-        return True, "URL is too long, looks suspicious."
+        return True, "URL length is unusually long"
 
     if url.count(".") > 3:
-        return True, "URL has too many subdomains."
+        return True, "Too many subdomains"
 
     domain = url.split("//")[-1].split("/")[0]
-    if any(char.isdigit() for char in domain):
-        return True, "Domain name contains numbers, looks suspicious."
 
-    if re.search(r"[@\-_%=]", domain):
-        return True, "Domain contains unusual special characters."
+    # IP-based URL
+    if re.match(r"\d+\.\d+\.\d+\.\d+", domain):
+        return True, "IP-based URL detected"
 
-    if re.match(r"^https?:\/\/\d+\.\d+\.\d+\.\d+", url):
-        return True, "URL is using an IP address instead of domain name."
+    if re.search(r"[@_%=]", domain):
+        return True, "Unusual characters in domain"
 
-    return False, "This URL seems safe."
-
-
-
-
+    return False, "No phishing indicators found"
